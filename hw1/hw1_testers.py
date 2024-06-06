@@ -189,6 +189,7 @@ class TestFunctions(unittest.TestCase):
         self.assertEqual(eval_pol("+11x^12", 2), 45056)
         self.assertEqual(eval_pol("+5x^3-4x^2+7x^1-5x^0", 4), 279)
         self.assertEqual(eval_pol("+5x^3-4x^2+7x^1-5x^0", 0), -5)
+        self.assertEqual(eval_pol("-4x^3+2x^2-1x^3+5x^0", 2), -27)
 
 if __name__ == "__main__":
     unittest.main()
