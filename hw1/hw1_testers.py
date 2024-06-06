@@ -155,7 +155,7 @@ class TestFunctions(unittest.TestCase):
         self.assertFalse(is_anagram_v2("hello", "world"))
         self.assertFalse(is_anagram_v2("hello", ""))
         self.assertFalse(is_anagram_v2("", "hello"))
-        self.assertTrue(is_anagram("a", "a"))
+        self.assertTrue(is_anagram_v2("a", "a"))
         self.assertTrue(is_anagram_v2("", ""))
 
     # 5C
@@ -165,7 +165,7 @@ class TestFunctions(unittest.TestCase):
         self.assertFalse(is_anagram_v3("hello", "world"))
         self.assertFalse(is_anagram_v3("hello", ""))
         self.assertFalse(is_anagram_v3("", "hello"))
-        self.assertTrue(is_anagram("a", "a"))
+        self.assertTrue(is_anagram_v3("a", "a"))
         self.assertTrue(is_anagram_v3("", ""))
 
     # 6A
