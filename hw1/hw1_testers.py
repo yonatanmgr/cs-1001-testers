@@ -130,7 +130,7 @@ class TestFunctions(unittest.TestCase):
         self.assertEqual(merge("a", "b"), "ab")
         self.assertEqual(merge("aaaa", "zzzz"), "aaaazzzz")
         self.assertEqual(merge("1234", "5678"), "12345678")
-        self.assertEqual(merge("1234", "4321"), "11223344")  # Reversed order numerical characters
+        self.assertEqual(merge("1234", "4321"), "11223344")
         self.assertEqual(merge("abcd", "efgh"), "abcdefgh")
         self.assertEqual(merge("abc", "cde"), "abccde")
         self.assertEqual(merge("apple", "orange"), "aaeeglnoppr")
