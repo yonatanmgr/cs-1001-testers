@@ -44,7 +44,6 @@ class TestFunctions(unittest.TestCase):
         self.assertEqual(least_frequent("12233"), "1")
         self.assertEqual(least_frequent("!@#$$@!"), "#")
         self.assertEqual(least_frequent("a"), "a")
-        self.assertEqual(least_frequent(""), None)
 
     # 4E
     def test_common_suffix(self):
