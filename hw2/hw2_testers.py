@@ -145,6 +145,12 @@ class TestFunctions(unittest.TestCase):
         self.assertEqual(sorted(original), sorted(anagram))
         self.assertEqual(sample_anagram(""), "")
 
+        results = [sample_anagram("abc") for _ in range(10000)]
+        all(
+            self.assertAlmostEqual(results.count(key), 1666, delta=150)
+            for key in results
+        )
+
     # QUESTION 3
     def test_inc(self):
         test_increment = lambda st: self.assertEqual(inc(st), bin(int(st, 2) + 1)[2:])
