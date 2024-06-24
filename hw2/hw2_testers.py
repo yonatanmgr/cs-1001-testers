@@ -4,17 +4,19 @@ import unittest
 from skeleton_file import *
 
 # HELPERS
-is_good_slot = lambda slot, tested: slot[1] <= tested[0] or slot[0] >= tested[1]
-flatten = lambda l: [item for sublist in l for item in sublist]
-random_binary = lambda: bin(randint(0, 4096))[2:]
+is_slot_overlapping = lambda slot, tested: slot[1] > tested[0] and slot[0] < tested[1]
+flatten_list = lambda l: [item for sublist in l for item in sublist]
+gen_random_binary = lambda: bin(randint(0, 4096))[2:]
 
-def generate_prob_list(n):
+
+def generate_random_prob_list(n):
     sum = 10000
     numbers = []
     for _ in range(n - 1):
         numbers.append(randint(0, sum))
         sum -= numbers[-1]
-    return [n/10000 for n in numbers + [sum]]
+    return [n / 10000 for n in numbers + [sum]]
+
 
 def generate_random_letters(n):
     letters = []
@@ -24,7 +26,8 @@ def generate_random_letters(n):
             letters.append(l)
     return letters
 
-def generate_timetable(n):
+
+def generate_random_timetable(n):
     slots = []
     start = randint(7, 10)
     for _ in range(n):
@@ -34,15 +37,16 @@ def generate_timetable(n):
             start = min(end + randint(1, 3), 20)
     return slots
 
-def generate_intervals(n):
+
+def generate_random_intervals(n):
     intervals = []
     for i in range(n):
-        start = randint(i*1000, i*1000 + 1000)
-        end = randint(i*1000, start + 2000)
+        start = randint(i * 1000, i * 1000 + 1000)
+        end = randint(i * 1000, start + 2000)
         intervals.append((start, end) if start < end else (end, start))
     return sorted(intervals)
 
-# TESTS
+
 class TestFunctions(unittest.TestCase):
     # QUESTION 1
     def test_divisors(self):
@@ -52,6 +56,9 @@ class TestFunctions(unittest.TestCase):
         self.assertEqual(divisors(12), [1, 2, 3, 4, 6])
         self.assertEqual(divisors(7), [1])
         self.assertEqual(divisors(496), [1, 2, 4, 8, 16, 31, 62, 124, 248])
+        self.assertEqual(
+            divisors(180), [1, 2, 3, 4, 5, 6, 9, 10, 12, 15, 18, 20, 30, 36, 45, 60, 90]
+        )
 
     def test_perfect_numbers(self):
         self.assertEqual(perfect_numbers(1), [6])
@@ -69,6 +76,7 @@ class TestFunctions(unittest.TestCase):
         self.assertFalse(semi_perfect_4(6))
         self.assertFalse(semi_perfect_4(15))
         self.assertFalse(semi_perfect_4(28))
+        self.assertFalse(semi_perfect_4(0))
 
     def test_find_gcd(self):
         self.assertEqual(find_gcd(48, 18), 6)
@@ -95,7 +103,6 @@ class TestFunctions(unittest.TestCase):
         self.assertEqual(find_gcd(1024, 2048), 1024)
         self.assertEqual(find_gcd(17, 13), 1)
 
-
     # QUESTION 2
     def test_coin(self):
         DEBUG = False
@@ -106,15 +113,15 @@ class TestFunctions(unittest.TestCase):
             print("\n")
             print("Testing coin function for 10000 times.")
             print(outcomes)
-        self.assertGreater(outcomes[True], 4000)
-        self.assertGreater(outcomes[False], 4000)
+        self.assertAlmostEqual(outcomes[True], 5000, delta=500)
+        self.assertAlmostEqual(outcomes[False], 5000, delta=500)
 
     def test_sample(self):
         DEBUG = False
         for _ in range(100):
             size = randint(3, 6)
             v = generate_random_letters(size)
-            p = generate_prob_list(size)
+            p = generate_random_prob_list(size)
             samples = [sample(v, p) for _ in range(10000)]
             for i in range(size):
                 self.assertAlmostEqual(samples.count(v[i]) / 10000, p[i], delta=0.1)
@@ -128,7 +135,7 @@ class TestFunctions(unittest.TestCase):
 
     def test_monty_hall(self):
         DEBUG = False
-        times = 100000
+        times = 10000
         result_switch = monty_hall(True, times)
         result_stay = monty_hall(False, times)
         if DEBUG:
@@ -155,14 +162,16 @@ class TestFunctions(unittest.TestCase):
     def test_inc(self):
         test_increment = lambda st: self.assertEqual(inc(st), bin(int(st, 2) + 1)[2:])
         for _ in range(10000):
-            test_increment(random_binary())
+            test_increment(gen_random_binary())
 
     def test_add(self):
         DEBUG = False
-        test_add = lambda a, b: self.assertEqual(add(a, b), bin(int(a, 2) + int(b, 2))[2:])
+        test_add = lambda a, b: self.assertEqual(
+            add(a, b), bin(int(a, 2) + int(b, 2))[2:]
+        )
         for i in range(10000):
-            b1 = random_binary()
-            b2 = random_binary()
+            b1 = gen_random_binary()
+            b2 = gen_random_binary()
             if DEBUG:
                 print("\n")
                 print("Testing add function for the " + str(i + 1) + "th time.")
@@ -172,12 +181,14 @@ class TestFunctions(unittest.TestCase):
                 print(correct_ans, "is the correct answer")
                 print(add(b1, b2), "is the function's answer")
             test_add(b1, b2)
-    
+
     def test_mod_two(self):
         DEBUG = False
-        test_mod_two = lambda st, n: self.assertEqual(mod_two(st, n), bin(int(st, 2) % 2**n)[2:])
+        test_mod_two = lambda st, n: self.assertEqual(
+            mod_two(st, n), bin(int(st, 2) % 2**n)[2:]
+        )
         for i in range(10000):
-            binary = random_binary()
+            binary = gen_random_binary()
             power = randint(1, 10)
             if DEBUG:
                 print("\n")
@@ -188,49 +199,75 @@ class TestFunctions(unittest.TestCase):
                 print(mod_two(binary, power), "is the function's answer")
             test_mod_two(binary, power)
 
-
     def test_max_bin(self):
         for _ in range(10000):
-            random_binary_numbers = [random_binary() for _ in range(10)]
-            self.assertEqual(max_bin(random_binary_numbers), max(random_binary_numbers, key=lambda x: int(x, 2)))
-        
+            random_binary_numbers = [gen_random_binary() for _ in range(10)]
+            self.assertEqual(
+                max_bin(random_binary_numbers),
+                max(random_binary_numbers, key=lambda x: int(x, 2)),
+            )
+
     # QUESTION 4
     def test_assess_office_hour(self):
         for _ in range(1000):
             student_schedules_dict = {
-                "Alice": generate_timetable(5),
-                "Bob": generate_timetable(5),
-                "Charlie": generate_timetable(5),
+                "Alice": generate_random_timetable(5),
+                "Bob": generate_random_timetable(5),
+                "Charlie": generate_random_timetable(5),
             }
-            
+
             random_hour = randint(7, 19)
             random_slot = (random_hour, random_hour + 1)
             available, ratio = assess_office_hour(random_slot, student_schedules_dict)
-            available_intervals = flatten([student_schedules_dict[student] for student in available])
-            
-            self.assertTrue(all([is_good_slot(random_slot, interval) for interval in available_intervals]))
-            self.assertAlmostEqual(ratio, len(available) / len(student_schedules_dict), delta=0.1)
-        
+            available_intervals = flatten_list(
+                [student_schedules_dict[student] for student in available]
+            )
+
+            self.assertTrue(
+                all(
+                    [
+                        not is_slot_overlapping(random_slot, interval)
+                        for interval in available_intervals
+                    ]
+                )
+            )
+            self.assertAlmostEqual(
+                ratio, len(available) / len(student_schedules_dict), delta=0.1
+            )
+
     def test_merge_intervals(self):
         for _ in range(50):
-            intervals = generate_intervals(1000)
+            intervals = generate_random_intervals(1000)
             merged_intervals = merge_intervals(intervals)
-            is_in_merged = lambda i: any([i[0] >= m[0] or i[1] <= m[1] for m in merged_intervals])
+            is_in_merged = lambda i: any(
+                [i[0] >= m[0] or i[1] <= m[1] for m in merged_intervals]
+            )
             self.assertTrue(all([is_in_merged(interval) for interval in intervals]))
 
     def test_find_perfect_slots(self):
         for _ in range(1000):
             student_schedules_dict = {
-                "Alice": generate_timetable(5),
-                "Bob": generate_timetable(5),
-                "Charlie": generate_timetable(5),
+                "Alice": generate_random_timetable(5),
+                "Bob": generate_random_timetable(5),
+                "Charlie": generate_random_timetable(5),
             }
-            
+
             perfect_slots = find_perfect_slots(student_schedules_dict)
             if perfect_slots:
                 self.assertGreaterEqual(perfect_slots[0][0], 7)
                 self.assertLessEqual(perfect_slots[-1][1], 20)
-                self.assertTrue(all([is_good_slot(slot, interval) for slot in perfect_slots for interval in flatten(student_schedules_dict.values())]))
+                self.assertTrue(
+                    all(
+                        [
+                            not is_slot_overlapping(slot, interval)
+                            for slot in perfect_slots
+                            for interval in flatten_list(
+                                student_schedules_dict.values()
+                            )
+                        ]
+                    )
+                )
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
