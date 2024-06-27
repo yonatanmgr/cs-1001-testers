@@ -1,12 +1,14 @@
 from random import randint
 import unittest
+from math import floor
 
 from skeleton_file import *
 
 # HELPERS
 is_slot_overlapping = lambda slot, tested: slot[1] > tested[0] and slot[0] < tested[1]
 flatten_list = lambda l: [item for sublist in l for item in sublist]
-gen_random_binary = lambda: bin(randint(0, 4096))[2:]
+clean_zeros = lambda s: s.lstrip("0") if s != "0" else s
+gen_random_binary = lambda: clean_zeros(bin(floor(random.random() * 2**10))[2:])
 
 
 def generate_random_prob_list(n):
@@ -176,8 +178,8 @@ class TestFunctions(unittest.TestCase):
                 print("\n")
                 print("Testing add function for the " + str(i + 1) + "th time.")
                 correct_ans = bin(int(b1, 2) + int(b2, 2))[2:]
-                print(b1.zfill(len(correct_ans)), "is the first binary number")
-                print(b2.zfill(len(correct_ans)), "is the second binary number")
+                print(b1.rjust(len(correct_ans), " "), "is the first binary number")
+                print(b2.rjust(len(correct_ans), " "), "is the second binary number")
                 print(correct_ans, "is the correct answer")
                 print(add(b1, b2), "is the function's answer")
             test_add(b1, b2)
